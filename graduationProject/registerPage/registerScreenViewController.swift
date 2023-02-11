@@ -7,123 +7,129 @@
 
 import UIKit
 
-class registerScreenViewController: UIViewController {
+class registerScreenViewController: UIViewController,UITextFieldDelegate {
 
    // var users: [User] = []
    var isAgree = false
 
     @IBOutlet weak var btSignUpOut: UIButton!
-    //let context1 = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    
+    @IBOutlet weak var btSignInFromHere: UIButton!
+    @IBOutlet weak var lblCreateAccount: UILabel!
     @IBOutlet weak var txtName: UITextField!
+    @IBOutlet weak var imgFood: UIImageView!
+    @IBOutlet weak var lblHaveAccount: UILabel!
     @IBOutlet weak var txtEmail: UITextField!
-    
-    @IBOutlet weak var btAgreeWithOut: UIButton!
     @IBOutlet weak var txtPass: UITextField!
-    
     @IBOutlet weak var txtPassConfirm: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        addpohtoLeft(txtName, UIImage(systemName: "person.fill")!)
-        addpohtoLeft(txtEmail, UIImage(systemName: "envelope.fill")!)
-        addpohtoLeft(txtPass, UIImage(systemName: "lock.fill")!)
-        addpohtoLeft(txtPassConfirm, UIImage(systemName: "lock.fill")!)
-        addpohtoRigth(txtPass, UIImage(systemName: "eye.slash")!)
-        addRigth(txtPassConfirm, UIImage(systemName: "eye.slash")!)
-        btSignUpOut.layer.cornerRadius = (btSignUpOut.frame.height/2)
+        addpohtoLeft(txtName)
+        addpohtoLeft(txtEmail)
+        addpohtoLeft(txtPass)
+        txtPass.isSecureTextEntry = true
+        addpohtoLeft(txtPassConfirm)
+        txtPassConfirm.isSecureTextEntry = true
+        //btSignUpOut.layer.cornerRadius = (btSignUpOut.frame.height/2)
+        btSignUpOut.layer.cornerRadius = btSignUpOut.frame.height/2
+        txtName.delegate = self
+        txtEmail.delegate = self
+        txtPass.delegate = self
+        txtPassConfirm.delegate = self
         
         
     }
-    func addpohtoLeft(_ textField: UITextField , _ img: UIImage){
-        let leftImagView = UIImageView(frame: CGRect(x: 0.0, y: 0.0, width:30, height: textField.frame.height))
-        leftImagView.image = img
-        textField.leftView = leftImagView
-        textField.leftViewMode = .always
-        textField.layer.cornerRadius = (textField.frame.height/2)
-        textField.layer.borderWidth = 1
-        textField.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+    ////////////////////////////////
+    override func viewWillAppear(_ animated: Bool) {
+            animateItems2()
+        }
+
+        func animateItems2()
+        {
+            
+            imgFood.layer.transform = CATransform3DMakeScale(0, 0, 1)
+            lblCreateAccount.layer.transform = CATransform3DMakeScale(0.2, 0.2, 1)
+            txtName.layer.transform = CATransform3DMakeScale(0.3, 0.3, 1)
+            txtEmail.layer.transform = CATransform3DMakeScale(0.4, 0.4, 1)
+            txtPass.layer.transform = CATransform3DMakeScale(0.5, 0.5, 1)
+            txtPassConfirm.layer.transform = CATransform3DMakeScale(0.6, 0.6, 1)
+            btSignUpOut.layer.transform = CATransform3DMakeScale(0.7, 0.7, 1)
+            lblHaveAccount.layer.transform = CATransform3DMakeScale(0.8, 0.8, 1)
+            btSignInFromHere.layer.transform = CATransform3DMakeScale(0.9, 0.9, 1)
+ 
+            UIView.animate(withDuration: 0.6) {
+                self.imgFood.layer.transform = CATransform3DMakeScale(1, 1, 1)
+                self.lblCreateAccount.layer.transform = CATransform3DMakeScale(1, 1, 1)
+                self.txtName.layer.transform = CATransform3DMakeScale(1, 1, 1)
+                self.txtEmail.layer.transform = CATransform3DMakeScale(1, 1, 1)
+                self.txtPass.layer.transform = CATransform3DMakeScale(1, 1, 1)
+                self.txtPassConfirm.layer.transform = CATransform3DMakeScale(1, 1, 1)
+                self.btSignUpOut.layer.transform = CATransform3DMakeScale(1, 1, 1)
+                self.lblCreateAccount.layer.transform = CATransform3DMakeScale(1, 1, 1)
+                self.btSignInFromHere.layer.transform = CATransform3DMakeScale(1, 1, 1)
+            }
+        }
+    ///////////////////////////////
+    
+    func addpohtoLeft(_ textField: UITextField){
+       textField.layer.cornerRadius = 10
         textField.layer.masksToBounds = true
+        textField.layer.borderWidth = 1
+        textField.layer.borderColor = #colorLiteral(red: 0.9973980784, green: 0.3564944267, blue: 0, alpha: 1)
     }
-    func addpohtoRigth(_ textField: UITextField , _ img: UIImage){
-       
-        let rigthImagView = UIImageView(frame: CGRect(x: 0.0, y: 0.0, width:30, height: textField.frame.height))
-        rigthImagView.image = img
-        textField.rightView = rigthImagView
-        textField.rightViewMode = .always
+    @IBAction func addUserToCoreData(_ sender: UIButton) {
+        let istrue = addUser(name: txtName.text!, email: txtEmail.text!, password: txtPass.text!, passconfirm: txtPassConfirm.text!)
+        switch istrue {
+        case 0:
+            alart(title: "Done", message: "successful registration", atitle: "OK")
+            
+        case 1:
+            alart(title: "Wrong", message: "Cofirm Password is't correct", atitle: "OK")
+        case 2:
+            alart(title: "Required", message: "plz.enter your password", atitle: "OK")
+        case 3:
+            alart(title: "Required", message: "plz.enter your email", atitle: "OK")
+        case 4:
+            alart(title: "Required", message: "plz.enter your name", atitle: "OK")
         
-        let tapGesturRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGesturRecognizer: )))
-        rigthImagView.isUserInteractionEnabled = true
-        rigthImagView.addGestureRecognizer(tapGesturRecognizer)
+        default:
+            alart(title: "Wrong", message: "Wrong!", atitle: "OK")
+        }
         
-    }
-    @objc func imageTapped(tapGesturRecognizer:UITapGestureRecognizer){
-        let tappedImage = tapGesturRecognizer.view as! UIImageView
-        var isIcon = false
-        if(tappedImage.image == UIImage(systemName: "eye")){
-        
-        }else{
-        isIcon = !isIcon
-        }
-        if isIcon{
-            tappedImage.image = UIImage(systemName: "eye")
-            txtPass.isSecureTextEntry = false
-        }
-        else{
-            tappedImage.image = UIImage(systemName: "eye.slash")
-            txtPass.isSecureTextEntry = true
-        }
-    }
-   
-    func addRigth(_ textField: UITextField , _ img: UIImage){
-       
-        let rigthImag = UIImageView(frame: CGRect(x: 0.0, y: 0.0, width:30, height: textField.frame.height))
-        rigthImag.image = img
-        textField.rightView = rigthImag
-        textField.rightViewMode = .always
-       
-        let tapGestur = UITapGestureRecognizer(target: self, action: #selector(image(tapGestur: )))
-        rigthImag.isUserInteractionEnabled = true
-        rigthImag.addGestureRecognizer(tapGestur)
         
     }
-    @objc func image(tapGestur:UITapGestureRecognizer){
-        let tapped = tapGestur.view as! UIImageView
-        var isIcon = false
-        if(tapped.image == UIImage(systemName: "eye")){
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
-        }else{
-        isIcon = !isIcon
+        switch textField {
+        case txtName:
+            txtEmail.becomeFirstResponder()
+        case txtEmail:
+            txtPass.becomeFirstResponder()
+        case txtPass:
+            txtPassConfirm.becomeFirstResponder()
+        case txtPassConfirm:
+            view.endEditing(true)
+        default:
+            view.endEditing(true)
         }
-        if isIcon{
-            tapped.image = UIImage(systemName: "eye")
-            txtPassConfirm.isSecureTextEntry = false
-        }
-        else{
-            tapped.image = UIImage(systemName: "eye.slash")
-            txtPassConfirm.isSecureTextEntry = true
-        }
+        return true
     }
-    
-    
-    
-    @IBAction func btAgreeWith(_ sender: UIButton) {
-        isAgree = !isAgree
-        if isAgree {
-            btAgreeWithOut.setImage( UIImage(systemName: "checkmark.square.fill"), for: .normal)
-        }
-        if !isAgree {
-            btAgreeWithOut.setImage( UIImage(systemName: "square"), for: .normal)
-        }
-        
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
     }
-    
-    @IBAction func addUser(_ sender: UIButton) {
-     
-        
+    func alart(title:String,message:String,atitle:String){
+        let alert = UIAlertController(title: title, message:message , preferredStyle: .alert)
+        let action = UIAlertAction(title:atitle , style: .cancel, handler: {
+            action in
+        })
+        alert.addAction(action)
+        self.present(alert, animated: true, completion: nil)
     }
     @IBAction func btSignInback(_ sender: UIButton) {
-        dismiss(animated: true, completion: nil)
+      //  dismiss(animated: true, completion: nil)
+        let sb = UIStoryboard(name: "Main", bundle: nil)
+            let vc = sb.instantiateViewController(identifier: "loginScreenViewController") as! loginScreenViewController
+       self.present(vc, animated: true, completion: nil)
     }
    
 
